@@ -3,9 +3,7 @@ import { ref } from 'vue'
 import type { PropType } from 'vue';
 
 const toggleEdit = ref(true);
-
-
-const { id, title, content, tags} = defineProps({
+const { id, title, content, noteTags} = defineProps({
     id:{
       type: Number,
       required: true
@@ -18,25 +16,36 @@ const { id, title, content, tags} = defineProps({
       type: String,
       required: true
     },
-    tags:{
+    noteTags:{
       type: Array as PropType<string[]>,
     },
+    tags:{
+      type: Array as PropType<string[]>
+    }
   });
 
   const localTitle = ref(title)
   const localContent = ref(content)
+  const noteTagsLocal = ref(noteTags)
 
   const handleToggle = () => {
-  toggleEdit.value = !toggleEdit.value;
-  localTitle.value = title
-  localContent.value = content
-};
+    toggleEdit.value = !toggleEdit.value;
+    localTitle.value = title
+    localContent.value = content
+  };
+
+  const handleToggleTags = (tag:string) =>
+  {
+      noteTagsLocal.value = noteTagsLocal.value?.includes(tag)
+    ? noteTagsLocal.value.filter(item => item !== tag) // Remove tag
+    : [...(noteTagsLocal.value ?? []), tag]; // Add tag, or initialize if undefined
+  }
 
   const emit = defineEmits(['handleDelete','handleEdit']);
 
   const onEdit = () =>
   {
-    emit('handleEdit', id, localTitle, localContent)
+    emit('handleEdit', id, localTitle.value, localContent.value, noteTagsLocal.value)
     toggleEdit.value = !toggleEdit.value;
   }
 
@@ -52,7 +61,7 @@ const { id, title, content, tags} = defineProps({
         <h3 class="note-card-title">{{title}}</h3>
         <p class="note-card-content">{{content}}</p>
         <section class="tagsContainer">
-          <div :class="['tags', tag.includes(tag) ? 'active' : '']" v-for="(tag, index) in tags"
+          <div :class="['tags', tag.includes(tag) ? 'active' : '']" v-for="(tag, index) in noteTags"
             :key="index">{{ tag }}
           </div>
         </section>
@@ -64,8 +73,11 @@ const { id, title, content, tags} = defineProps({
         <input class="note-card-title-input" v-model="localTitle" placeholder="Title"/>
         <input class="note-card-content-input" v-model="localContent" placeholder="Content"/>
         <section class="tagsContainer">
-          <div :class="['tags', tag.includes(tag) ? 'active' : '']" v-for="(tag, index) in tags"
-            :key="index">{{ tag }}
+          <div  v-for="(tag, index) in tags"
+            :key="index">
+            <button :class="['tags', noteTagsLocal?.includes(tag) ? 'active' : '']" @click="handleToggleTags(tag)">
+              {{ tag }}
+            </button>
           </div>
         </section>
         <button class="save-btn" @click="onEdit">Save</button>

@@ -22,10 +22,10 @@ const handleDelete = (id:number) =>
   noteList.value = noteList.value.filter(item => item.id !== id);
 }
 
-const handleEdit = (id:number, title:string, content:string) => {
+const handleEdit = (id:number, title:string, content:string, localTags:string[]) => {
   noteList.value = noteList.value.map(item =>
     item.id === id
-    ?  {...item, title: title, content: content}
+    ?  {...item, title: title, content: content, noteTags: localTags}
     : item
   )
 }
@@ -40,7 +40,8 @@ const handleEdit = (id:number, title:string, content:string) => {
       :id = "note.id"
       :title="note.title"
       :content="note.content"
-      :tags="note.noteTags"
+      :tags="tags"
+      :noteTags="note.noteTags"
       @handleDelete="handleDelete"
       @handleEdit="handleEdit"
       />
@@ -52,7 +53,8 @@ const handleEdit = (id:number, title:string, content:string) => {
       :id = "note.id"
       :title="note.title"
       :content="note.content"
-      :tags="note.noteTags"
+      :tags="tags"
+      :noteTags="note.noteTags"
       @handleDelete="handleDelete"
       @handleEdit="handleEdit"/>
       <NoteInput

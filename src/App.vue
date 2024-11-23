@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import Note from './components/Note.vue'
 import NoteInput from './components/NoteInput.vue'
+import Filter from './components/Filter.vue'
 
 const toggleScreen = ref(false);
 const noteList = ref(<{id:number, title:string, content:string, noteTags:string[]}[]>[])
@@ -32,6 +33,8 @@ const handleEdit = (id:number, title:string, content:string, localTags:string[])
 </script>
 
 <template>
+  <Filter
+  :tags="tags"/>
   <h3>The Note App</h3>
   <article class="noteContainer">
     <template v-if="toggleScreen">  
@@ -69,6 +72,11 @@ const handleEdit = (id:number, title:string, content:string, localTags:string[])
 .noteContainer {
   margin: 30px;
   display: flex;
+  text-align: center;
+}
+h3
+{
+  text-align: center;
 }
 
 .buttonCard {

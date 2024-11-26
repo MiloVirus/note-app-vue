@@ -1,26 +1,35 @@
 <script setup  lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
+import { useNotesStore } from './store/notes';
 import Note from './components/Note.vue'
 import NoteInput from './components/NoteInput.vue'
 import Filter from './components/Filter.vue'
 
 const toggleScreen = ref(false);
 const noteList = ref(<{id:number, title:string, content:string, noteTags:string[]}[]>[])
+//const noteList = computed(() => userStore.notes);
 const tags = ref(['sport', 'news', 'tech', 'to-do'])
+const userStore = useNotesStore();
+
+onMounted(async () => {
+  await userStore.fetchNotes(); 
+  noteList.value = userStore.notes;
+});
 
 const handleToggle = () => {
   toggleScreen.value = !toggleScreen.value;
 };
 
-const handleSave = (title:string , content:string, selectedTags:string[]) =>
+const handleSave = async(title:string , content:string, selectedTags:string[]) =>
 {
-  const id = Math.floor(Math.random() * 100)
-  noteList.value.push({id:id, title: title, content: content, noteTags: selectedTags})
+  const newNote = {title: title, content: content, tags: selectedTags}
+  await userStore.createNote(newNote)
 }
 
-const handleDelete = (id:number) =>
+const handleDelete = async(id:number) =>
 {
-  noteList.value = noteList.value.filter(item => item.id !== id);
+  await userStore.deleteNote(id)
+  //noteList.value = noteList.value.filter(item => item.id !== id);
 }
 
 const handleEdit = (id:number, title:string, content:string, localTags:string[]) => {

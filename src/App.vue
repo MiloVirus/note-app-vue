@@ -6,14 +6,13 @@ import NoteInput from './components/NoteInput.vue'
 import Filter from './components/Filter.vue'
 
 const toggleScreen = ref(false);
-const noteList = ref(<{id:number, title:string, content:string, noteTags:string[]}[]>[])
-//const noteList = computed(() => userStore.notes);
-const tags = ref(['sport', 'news', 'tech', 'to-do'])
 const userStore = useNotesStore();
+const noteList = computed(() => userStore.notes);
+const tags = ref(['sport', 'news', 'tech', 'to-do'])
+
 
 onMounted(async () => {
-  await userStore.fetchNotes(); 
-  noteList.value = userStore.notes;
+  await userStore.fetchNotes();
 });
 
 const handleToggle = () => {
@@ -29,15 +28,11 @@ const handleSave = async(title:string , content:string, selectedTags:string[]) =
 const handleDelete = async(id:number) =>
 {
   await userStore.deleteNote(id)
-  //noteList.value = noteList.value.filter(item => item.id !== id);
 }
 
-const handleEdit = (id:number, title:string, content:string, localTags:string[]) => {
-  noteList.value = noteList.value.map(item =>
-    item.id === id
-    ?  {...item, title: title, content: content, noteTags: localTags}
-    : item
-  )
+const handleEdit = async(id:number, title:string, content:string, localTags:string[]) => {
+  const data = {id: id, title: title, content: content, tags: localTags}
+  await userStore.editNote(id, data)
 }
 </script>
 

@@ -40,11 +40,22 @@ export const useNotesStore = defineStore('notes',
             {
                 try {
                     await axios.delete(`http://localhost:3000/notes/${noteId}`)
+                    this.notes = this.notes.filter(note => note.id !== noteId)
                 } catch (error) {
-                    
+                    this.error = (error as Error).message
+                }
+            },
+            
+            async editNote(noteId:number, data: {})
+            {
+                try {
+                    const response = await axios.put(`http://localhost:3000/notes/${noteId}`, data) 
+                    const index = this.notes.findIndex(note => note.id === noteId);
+                    this.notes[index] = response.data
+                } catch (error) {
+                    this.error = (error as Error).message
                 }
             }
-            
         }
     }
 )
